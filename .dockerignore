@@ -1,0 +1,4 @@
+.git
+*.mmdb
+*.xdb
+/geoip-hub

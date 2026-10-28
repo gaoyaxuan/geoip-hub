@@ -1,0 +1,27 @@
+services:
+  geoip-hub:
+    image: ghcr.io/gaoyaxuan/geoip-hub:latest
+    container_name: geoip-hub
+    restart: always
+    network_mode: bridge
+    environment:
+      # 查询链，按顺序降级（下面是默认值）。不想调用外部 API 就去掉 ipapi，完整配置见 README
+      GEOIP_CHAIN: "ipapi,ip2region@CN,geolite"
+      # 时区（IANA 时区名，如 Asia/Shanghai、Europe/Berlin），只影响日志时间，不设置时为 UTC
+      # TZ: "Asia/Shanghai"
+      # 访问外部 API 需要代理时设置：ip-api 免费版走 HTTP_PROXY，ipwho.is 走 HTTPS_PROXY
+      # HTTP_PROXY: "http://192.168.1.2:7890"
+      # HTTPS_PROXY: "http://192.168.1.2:7890"
+    volumes:
+      # 数据文件（只读挂载）。没有的文件请保持注释，否则 docker 会在宿主机上创建同名空目录
+      - ./GeoLite2-City.mmdb:/app/GeoLite2-City.mmdb:ro
+      # - ./GeoLite2-ASN.mmdb:/app/GeoLite2-ASN.mmdb:ro
+      # - ./ip2region_v4.xdb:/app/ip2region_v4.xdb:ro
+      # - ./ip2region_v6.xdb:/app/ip2region_v6.xdb:ro
+    # 容器文件系统只读
+    read_only: true
+    cap_drop:
+      - ALL
+    ports:
+      # 默认映射到8080端口
+      - "8080:8080"
